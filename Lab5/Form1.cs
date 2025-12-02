@@ -6,10 +6,10 @@ namespace Lab5
         {
             InitializeComponent();
         }
-        /* Name:
-         * Date: November 2025
+        /* Name:Farouk Olatunji
+         * Date: November 12 2025
          * This program rolls one dice or calculates mark stats.
-         * Link to your repo in GitHub: 
+         * Link to your repo in GitHub: https://github.com/farouq363/olatunjiLab5/tree/master 
          * */
 
         //class-level random object
@@ -18,8 +18,10 @@ namespace Lab5
         private void Form1_Load(object sender, EventArgs e)
         {
             //select one roll radiobutton
+            radOneRoll.Checked = true;
 
             //add your name to end of form title
+            this.Text = "Farouk Olatunji";
 
         } // end form load
 
@@ -38,12 +40,18 @@ namespace Lab5
         {
             int dice1, dice2;
             //call ftn RollDice, placing returned number into integers
+            dice1 = RollDice();
+            dice2 = RollDice();
 
             //place integers into labels
+            lblDice1.Text = dice1.ToString();
+            lblDice2.Text = dice2.ToString();
 
             // call ftn GetName sending total and returning name
+            string name = GetName(dice2, dice1);   
 
             //display name in label
+            lblRollName.Text = name;
 
         }
 
@@ -51,6 +59,12 @@ namespace Lab5
         *  Sent: nothing
         *  Return: nothing
         *  Clear the labels */
+        private void ClearOneRoll()
+        {
+            lblDice1.Text = "";
+            lblDice2.Text = "";
+            lblRollName.Text = "";
+        }
 
 
         /* Name: ClearStats
@@ -58,12 +72,24 @@ namespace Lab5
         *  Return: nothing
         *  Reset nud to minimum value, chkbox unselected, 
         *  clear labels and listbox */
+        private void ClearStats()
+        {
+            lblPass.Text = "";
+            lblFail.Text = "";
+            lblAverage.Text = "";
+            lstMarks.Items.Clear();
+            chkSeed.Checked = false;
+        }
 
 
         /* Name: RollDice
         * Sent: nothing
         * Return: integer (1-6)
         * Simulates rolling one dice */
+        private int RollDice()
+        {
+            return rand.Next(1, 7);
+        }
 
 
         /* Name: GetName

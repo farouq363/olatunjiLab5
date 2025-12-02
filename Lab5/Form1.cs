@@ -21,18 +21,20 @@ namespace Lab5
             radOneRoll.Checked = true;
 
             //add your name to end of form title
-            this.Text = "Farouk Olatunji";
+            this.Text += "Farouk Olatunji";
 
         } // end form load
 
         private void btnClear_Click(object sender, EventArgs e)
         {
             //call the function
+            ClearOneRoll();
         }
 
         private void btnReset_Click(object sender, EventArgs e)
         {
             //call the function
+            ClearStats();
 
         }
 
@@ -48,7 +50,7 @@ namespace Lab5
             lblDice2.Text = dice2.ToString();
 
             // call ftn GetName sending total and returning name
-            string name = GetName(dice2, dice1);   
+            string name = GetName(dice2, dice1);
 
             //display name in label
             lblRollName.Text = name;
@@ -105,42 +107,124 @@ namespace Lab5
         *        11 = Yo-leven
         *        12 = Boxcars
         * Anything else = No special name*/
+        private string GetName(int firstNumber, int secondNumber)
+        {
+            int total = firstNumber + secondNumber;
+            string result;
+
+            switch (total)
+            {
+                case 2:
+                    result = "Snake Eyes";
+                    break;
+                case 3:
+                    result = "Little Joe";
+                    break;
+                case 5:
+                    result = "Fever";
+                    break;
+                case 7:
+                    result = "Most Common";
+                    break;
+                case 9:
+                    result = "Center Field";
+                    break;
+                case 11:
+                    result = "Yo-leven";
+                    break;
+                case 12:
+                    result = "Boxcars";
+                    break;
+                default:
+                    result = "No special";
+                    break;
+            }
+
+            return result;
+        }
+
 
         private void btnSwapNumbers_Click(object sender, EventArgs e)
         {
             //call ftn DataPresent twice sending string returning boolean
+            bool _lblDice1 = DataPresent(lblDice1);
+            bool _lblDice2 = DataPresent(lblDice2);
 
             //if data present in both labels, call SwapData sending both strings
 
             //put data back into labels
 
             //if data not present in either label display error msg
+
+            if (_lblDice1 == true && _lblDice2 == true)
+            {
+                string lbldice1 = lblDice1.Text;
+                string lbldice2 = lblDice2.Text;
+
+                SwapData(ref lbldice1, ref lbldice2);
+                //put data back into labels
+                lblDice1.Text = lbldice1;
+                lblDice2.Text = lbldice2;
+
+            }
+            else
+            {
+                MessageBox.Show("Roll the dice", "Data Missing");
+            }
+
         }
 
         /* Name: DataPresent
         * Sent: string
         * Return: bool (true if data, false if not) 
         * See if string is empty or not*/
+        private bool DataPresent(Label label)
+        {
+            return !(string.IsNullOrEmpty(label.Text));
+        }
 
 
         /* Name: SwapData
         * Sent: 2 strings
         * Return: none 
         * Swaps the memory locations of two strings*/
+        private void SwapData(ref string str1, ref string str2)
+        {
+            string temp = str1;
+            str1 = str2;
+            str2 = temp;
+        }
 
         private void btnGenerate_Click(object sender, EventArgs e)
         {
             //declare variables and array
+            int size = (int)nudNumber.Value;
+            int[] marks = new int[size];
 
             //check if seed value
+            if (chkSeed.Checked)
+            {
+                rand = new Random(1000);
+            }
+            lstMarks.Items.Clear();
 
             //fill array using random number
+            int i = 0;
+            while (i < size)
+            {
+                marks[i] = rand.Next(40, 101);
+                lstMarks.Items.Add(marks[i]);
+                i++;
+            }
 
             //call CalcStats sending and returning data
+            CalcStats(out double average, out int passNumber, out int failNumber, marks);
 
             //display data sent back in labels - average, pass and fail
+            lblPass.Text = passNumber.ToString();
+            lblFail.Text = failNumber.ToString();
             // Format average always showing 2 decimal places 
-
+            lblAverage.Text =  average.ToString("f2");
         } // end Generate click
 
         /* Name: CalcStats
@@ -150,5 +234,71 @@ namespace Lab5
         * Passmark is 60%
         * Calculate average and count how many marks pass and fail
         * The pass and fail values must also get returned for display*/
+        private void CalcStats(out double average, out int pass, out int fail, int[] marks)
+        {
+            int sum = 0;
+            pass = 0;
+            fail = 0;
+
+            foreach (int mark in marks)
+            {
+                sum += mark;
+                if (mark >= 50)
+                {
+                    pass++;
+                }
+                else
+                {
+                    fail++;
+                }
+            }
+
+            average = (double)sum / marks.Length;
+        }
+
+        private void radOneRoll_CheckedChanged(object sender, EventArgs e)
+        {
+
+            //radRollStats.Checked = false;
+            grpMarkStats.Hide();
+
+
+            //radOneRoll.Checked = true;
+            grpOneRoll.Show();
+        }
+
+        private void radRollStats_CheckedChanged(object sender, EventArgs e)
+        {
+
+            //radOneRoll.Checked = false;
+            grpOneRoll.Hide();
+
+            //radRollStats.Checked = true;
+            grpMarkStats.Show();
+        }
+        private bool isHandlingCheckChanged = false;
+
+        private void chkSeed_CheckedChanged(object sender, EventArgs e)
+        {
+            if (isHandlingCheckChanged) return;
+
+            if (chkSeed.Checked)
+            {
+                isHandlingCheckChanged = true;
+
+                DialogResult result = MessageBox.Show( "Are you sure you want to seed value?","Confirm Seed value",MessageBoxButtons.YesNo,MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    chkSeed.Checked = true;
+                }
+                else
+                {
+                    chkSeed.Checked = false;
+                }
+
+                isHandlingCheckChanged = false;
+            }
+        }
     }
 }
